@@ -71,12 +71,13 @@ static void queue_callback(void* atctx, AudioQueueRef inAQ,
     }
 }
 
+#if !TARGET_OS_IPHONE
 static av_cold int at_write_header(AVFormatContext *avctx)
 {
     ATContext *ctx = (ATContext*)avctx->priv_data;
     OSStatus err = noErr;
     CFStringRef device_UID = NULL;
-    AudioDeviceID *devices;
+    UInt32 *devices;
     int num_devices;
 
 
@@ -229,6 +230,11 @@ static av_cold int at_write_header(AVFormatContext *avctx)
 
     return 0;
 }
+#else
+static av_cold int at_write_header(AVFormatContext *avctx) {
+    return AVERROR(EINVAL);
+}
+#endif
 
 static int at_write_packet(AVFormatContext *avctx, AVPacket *pkt)
 {
