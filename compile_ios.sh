@@ -22,22 +22,27 @@ PREFIX="productions/arm64"
 cp tools/gas-preprocessor.pl /usr/local/bin/
 chmod 777 /usr/local/bin/gas-preprocessor.pl
 
-ARCH="arm"
-XARCH="-arch aarch64"
-TARGET_OS="darwin"
-# CLANG_COMPILER="clang -arch arm64"
-CLANG_COMPILER="gcc -arch arm64"
-SYSROOT="$(xcrun --sdk iphoneos --show-sdk-path)"
+BASE_ARCH="arm"
+CPU_ARCH="arm64" #arm64 armv8 armv7
 CPU="armv8"
-AS="/usr/local/bin/gas-preprocessor.pl -arch aarch64 -- $CLANG_COMPILER"
+ARCH_INSTRUCTION="aarch64"
+XARCH="-arch $ARCH_INSTRUCTION"
+TARGET_OS="darwin"
+CLANG_COMPILER="clang -arch $CPU_ARCH"
+# CLANG_COMPILER="gcc -arch $CPU_ARCH"
+SYSROOT="$(xcrun --sdk iphoneos --show-sdk-path)"
+AS="/usr/local/bin/gas-preprocessor.pl -arch $ARCH_INSTRUCTION -- $CLANG_COMPILER"
 
-./configure --enable-cross-compile --arch=$ARCH \
+./configure --enable-cross-compile \
+--arch=$BASE_ARCH \
 --target-os=$TARGET_OS \
 --cc="$CLANG_COMPILER" \
 --as="$AS" \
 --cpu=$CPU \
 --enable-pic \
 --prefix=$PREFIX \
---sysroot=$SYSROOT
+--sysroot=$SYSROOT \
+--disable-ffmpeg \
+--disable-ffprobe
 
 cp config.* $PREFIX
